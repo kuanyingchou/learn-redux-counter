@@ -1,6 +1,7 @@
 import { createStore } from 'redux';
 import React, { Component } from 'react';
 import { render } from 'react-dom';
+import { Provider, connect } from 'react-redux';
 
 function counter(state = 0, action) {
 	switch(action.type) {
@@ -21,23 +22,36 @@ let store = createStore(counter);
 store.subscribe(()=>
 	console.log(store.getState()));
 
-store.dispatch({type: 'INCREMENT'});
-store.dispatch({type: 'INCREMENT'});
-store.dispatch({type: 'DECREMENT'});
-store.dispatch({type: 'INCREMENT'});
-store.dispatch({type: 'INCREMENT'});
+// store.dispatch({type: 'INCREMENT'});
+// store.dispatch({type: 'INCREMENT'});
+// store.dispatch({type: 'DECREMENT'});
+// store.dispatch({type: 'INCREMENT'});
+// store.dispatch({type: 'INCREMENT'});
 
 class App extends Component {
-	constructor(props) {
-		super();
-		this.state = { value: props.value };
-	}
+	// constructor(props) {
+	// 	super(props);
+	// }
 
 	render() {
+		const {dispatch, value} = this.props;
 		return (
 			<div>
-				<Display value={this.state.value} />
-				<Control />
+				<Display value={value} />
+				<Control 
+						handleIncrement={
+							(e)=> {
+								dispatch({type: 'INCREMENT'}); 
+								console.log('+');
+							}
+						} 
+						handleDecrement={
+							(e)=>{
+								dispatch({type: 'DECREMENT'}); 
+								console.log('-');
+							}
+						}
+				/>
 			</div>
 		);
 	}
@@ -46,9 +60,9 @@ class App extends Component {
 class Display extends Component {
 	render() {
 		return (
-			<div>
+			<h1>
 				{this.props.value}
-			</div>
+			</h1>
 		);
 	}	
 }
@@ -57,15 +71,26 @@ class Control extends Component {
 	render() {
 		return (
 			<div>
-				<button>+
+				<button onClick={ this.props.handleIncrement }>
+				+
 				</button>
-				<button>-
+				<button onClick={ this.props.handleDecrement }>
+				-
 				</button>
 			</div>
 		);
 	}
 }
+
+function select(state) {
+	return {value: state};
+}
+
+let A = connect(select)(App);
+
 render(
-	<App value={0} />,
+	<Provider store={store}>
+		<A />
+	</Provider>,
 	document.getElementById('root')
 );
